@@ -1,0 +1,31 @@
+{
+  "tblMenu": [
+    {
+      "menudate": "mm/dd/yyyy",
+      "tblDayPart": [
+        {
+          "tblStation": [
+            {
+              "tblItem": [
+                {
+                  "tblAttributes": [
+                    {
+                      "description": "Vegetarian or Made with Gluten and shit like that"
+                    }
+                  ],
+                  "txtTitle": "the name of the actual dish",
+                  "txtDescription": "description of the dish"
+                }
+              ],
+              "txtStationDescription": "pretty useless stuff tbh"
+            }
+          ],
+          "txtDayPartDescription": "Breakfast or Lunch or Dinner"
+        }
+      ]
+    }
+  ]
+}
+
+//txtDayPartDescription what table we talkin about
+//
