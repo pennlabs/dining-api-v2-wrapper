@@ -2,8 +2,9 @@ const router = require('express').Router();
 const getVenueWeeklyMenu = require('./wrapper').getVenueWeeklyMenu;
 const venueIdMappings = require('./venue_id_mappings');
 
-router.use((req,res) => {
+router.use((req,res,next) => {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next()
 })
 
 router.get('/weekly_menu/:venueId', (req,res) => {
