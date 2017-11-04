@@ -28,6 +28,18 @@ function processStation(stations) {
   return stationsObj;
 }
 
+function refactorVenues(venueObj) {
+  const retObj = venueObj;
+  venueObj.forEach(({id,dateHours, venueType, name}) => {
+    retObj[id] = {
+      venueType,
+      dateHours,
+      name
+    }
+  })
+  console.log(retObj)
+}
+
 //get the shit for kings court
 
 module.exports.getVenueWeeklyMenu = function(venueId){
@@ -50,6 +62,19 @@ module.exports.getVenueWeeklyMenu = function(venueId){
     return menus
   });
 }
+
+module.exports.getVenueInformation = function (venueId) {
+  return axios.get('https://api.pennlabs.org/dining/venues')
+  .then(res => {
+    let venues = res.data.document.venue;
+    venues = refactorVenues(venues);
+  })
+  .catch(err => {
+    console.log(err)
+  })
+}
+
+getVenueInformation(523)
 
 //might only need to run this once per day
 module.exports.getVenueIdMappings = function(){
