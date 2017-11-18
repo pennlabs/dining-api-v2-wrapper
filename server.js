@@ -1,21 +1,17 @@
 const express = require('express');
 const app = express();
 const apirouter = require('./apirouter')
-const getVenueIdMappings = require('./wrapper').getVenueIdMappings
 const fs = require('fs')
 const bodyParser = require('body-parser')
+const schedule = require('node-schedule')
+
+
+//need to wait for database to seed before using the server
+//need to have the server seed itself on a schedule
+// require('./database/dbseed').seed()
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
-
-getVenueIdMappings()
-.then(mappings => {
-  const json = JSON.stringify(mappings, null, '\t');
-  fs.writeFile('venue_id_mappings.json', json, () => {
-    console.log('Finished making venue id mappings.')
-  });
-})
-.catch(console.log)
 
 app.use('/api', apirouter)
 

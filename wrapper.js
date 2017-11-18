@@ -29,7 +29,7 @@ function processStation(stations) {
 }
 
 function refactorVenues(venueObj) {
-  const retObj = venueObj;
+  const retObj = {};
   venueObj.forEach(({id,dateHours, venueType, name}) => {
     retObj[id] = {
       venueType,
@@ -37,7 +37,7 @@ function refactorVenues(venueObj) {
       name
     }
   })
-  console.log(retObj)
+  return retObj
 }
 
 //get the shit for kings court
@@ -60,21 +60,28 @@ module.exports.getVenueWeeklyMenu = function(venueId){
       menus[day.menudate] = meal_times;
     })
     return menus
-  });
-}
-
-module.exports.getVenueInformation = function (venueId) {
-  return axios.get('https://api.pennlabs.org/dining/venues')
-  .then(res => {
-    let venues = res.data.document.venue;
-    venues = refactorVenues(venues);
   })
   .catch(err => {
     console.log(err)
   })
 }
 
-getVenueInformation(523)
+module.exports.getAllVenues = getAllVenues
+
+function getAllVenues() {
+  return axios.get('https://api.pennlabs.org/dining/venues')
+  .then(res => {
+    let venues = res.data.document.venue;
+    return refactorVenues(venues);
+  })
+}
+
+module.exports.getVenueInformation = function(venueId){
+  return getAllVenues()
+  .then(venues => {
+    return venues[venueId]
+  })
+}
 
 //might only need to run this once per day
 module.exports.getVenueIdMappings = function(){
