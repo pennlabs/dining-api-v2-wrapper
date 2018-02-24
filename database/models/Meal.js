@@ -14,6 +14,7 @@ const mealSchema = new Schema({
     type: Schema.ObjectId,
     required: true
   },
+  category: String,
   meals: [{
     title: {
       type: String,

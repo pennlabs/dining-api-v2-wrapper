@@ -4,11 +4,12 @@ const apirouter = require('./apirouter')
 const fs = require('fs')
 const bodyParser = require('body-parser')
 const schedule = require('node-schedule')
+const seedFunctions = require('./database/dbseed')
 
 
 //need to wait for database to seed before using the server
 //need to have the server seed itself on a schedule
-// require('./database/dbseed').seed()
+// seedFunctions.full_seed()
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))

@@ -61,12 +61,7 @@ module.exports.getVenueWeeklyMenu = function(venueId){
     })
     return menus
   })
-  .catch(err => {
-    console.log(err)
-  })
 }
-
-module.exports.getAllVenues = getAllVenues
 
 function getAllVenues() {
   return axios.get('https://api.pennlabs.org/dining/venues')
@@ -75,6 +70,8 @@ function getAllVenues() {
     return refactorVenues(venues);
   })
 }
+
+module.exports.getAllVenues = getAllVenues;
 
 module.exports.getVenueInformation = function(venueId){
   return getAllVenues()
@@ -93,5 +90,13 @@ module.exports.getVenueIdMappings = function(){
       venues[venue.name] = venue.id
     })
     return venues
-  });
+  })
+  .then(mappings => {
+    const json = JSON.stringify(mappings, null, '\t');
+    return new Promise((res, rej) => {
+      fs.writeFile('venue_id_mappings.json', json, () => {
+        res(true)
+      });
+    })
+  })
 }

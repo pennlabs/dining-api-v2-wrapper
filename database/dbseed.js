@@ -19,7 +19,7 @@ function loadVenues() {
     return Promise.all(ids.map(id => {
       const venue = venues[id]
       return new Venue({
-        venueId: 593,
+        venueId: id, //figure out what the fuck the id is
         name: venue.name,
         venueType: venue.venueType
       })
@@ -43,19 +43,20 @@ function loadVenues() {
   })
 }
 
-function loadMeals(){
-  const meals = require('../all_menus')
+function loadMealsObjIntoDB (meals) {
   const venueIds = Object.keys(meals)
   return Promise.all(_.flatten(venueIds.map(venueId => {
+    //get a single venue
     return Venue.findOne({venueId : Number(venueId)})
     .then(venue => {
       if (!venue) {
         return Promise.resolve()
       }
+      //get corresponding meals object for venue
       const mealsObj = meals[venueId]
       const dates = Object.keys(mealsObj)
-      return _.flatten(dates.map(date => {
-        dateMealsObj = mealsObj[date]
+      return (dates.map(date => {
+        let dateMealsObj = mealsObj[date]
         const types = Object.keys(dateMealsObj)
         return types.map(type => { //type - breakfast lunch or dinner
           const mealObjects = dateMealsObj[type]
@@ -72,6 +73,7 @@ function loadMeals(){
             return new Meal({
               date: date,
               type: type,
+              category,
               venue: venue._id,
               meals: mealItems
             }).save()
@@ -82,41 +84,44 @@ function loadMeals(){
   })))
 }
 
-module.exports.loadMeals = loadMeals
-
-
-module.exports.seed = function() {
-  getVenueIdMappings()
-  .then(mappings => {
-    const json = JSON.stringify(mappings, null, '\t');
-    return new Promise((res, rej) => {
-      fs.writeFile('venue_id_mappings.json', json, () => {
-        res(true)
-      });
-    })
-  })
-  .then(() => {
+function loadMeals(){
+  //populate meals object with all meals from Penn-provided API
+  return new Promise((resolve,reject) => {
     const venueIdMappings = require('../venue_id_mappings');
     const venueIds = Object.keys(venueIdMappings).map(k => venueIdMappings[k])
-    const masterObj = {}
-    return new Promise((resolve,reject) => {
-      async.eachSeries(venueIds, function(id, callback) {
-        getVenueWeeklyMenu(id)
-        .then(json => {
-          console.log(id)
-          masterObj[id] = json
-          setTimeout(callback,1500)
-        })
-      }, function(err) {
-        fs.writeFile('all_menus.json', JSON.stringify(masterObj), (er) => {
-          resolve()
-        })
-      });
-    })
+    const meals = {} 
+    async.eachSeries(venueIds, function(id, callback) {
+      getVenueWeeklyMenu(id)
+      .then(json => {
+        console.log(id)
+        meals[id] = json
+        setTimeout(callback,50)
+      })
+      .catch(err => {
+        //Note that this error will come up even for venues that do not have menus (in which case this error is chill)
+        console.log(`Error populating menu for venue_id ${id} `)
+        setTimeout(callback,50)
+      })
+    }, function(err) {
+      if (err) {
+        return reject(err)
+      }
+      resolve(meals)
+    });
   })
-  .then(() => {
-    return loadVenues()
+  .then(meals => {
+    return loadMealsObjIntoDB(meals)
   })
+}
+
+
+module.exports.venues_seed = loadVenues;
+
+module.exports.meals_seed = loadMeals;
+
+module.exports.full_seed = function() {
+  //getting venueid mappings may not be necessary on every call
+  loadVenues()  
   .then(() => {
     return loadMeals()
   })
