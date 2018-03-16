@@ -11,7 +11,7 @@ router.post('/menu_date_range', (req,res) => {
   const venueId = req.body.venueId;
   const startDate = req.body.startDate;
   const endDate = req.body.endDate;
-  DB.dateRangeMenue(venueId, startDate, endDate)
+  DB.dateRangeMenu(venueId, startDate, endDate)
   .then(meals => {
     res.json(meals);
   })

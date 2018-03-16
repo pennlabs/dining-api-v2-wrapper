@@ -34,7 +34,7 @@ function formatMealsObject(meals){
   return retObject
 }
 
-module.exports.dateRangeMenue = function(venueId, startDate, endDate){
+module.exports.dateRangeMenu = function(venueId, startDate, endDate){
   return Venue.findOne({venueId})
   .then(venue => {
     const venueDbId = venue.id;
