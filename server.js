@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const apirouter = require('./apirouter')
 const fs = require('fs')
+const cors = require('cors')
 const bodyParser = require('body-parser')
 const schedule = require('node-schedule')
 const seedFunctions = require('./database/dbseed')
@@ -11,8 +12,10 @@ const seedFunctions = require('./database/dbseed')
 //need to have the server seed itself on a schedule
 // seedFunctions.full_seed()
 
+app.use(cors())
+
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use('/api', apirouter)
 
